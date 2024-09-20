@@ -10,7 +10,6 @@ class LoginOrRegister extends StatefulWidget {
 }
 
 class _LoginOrRegisterState extends State<LoginOrRegister> {
-  @override
   bool showLoginPage = true;
 
   void togglePages() {
@@ -19,6 +18,7 @@ class _LoginOrRegisterState extends State<LoginOrRegister> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     if (showLoginPage) {
       return LoginPage(
