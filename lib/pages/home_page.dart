@@ -4,6 +4,7 @@ import 'package:echo_wall/components/my_post_tile.dart';
 import 'package:echo_wall/helper/navigate_pages.dart';
 import 'package:echo_wall/models/post.dart';
 import 'package:echo_wall/services/database/database_provider.dart';
+import 'package:echo_wall/themes/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -50,26 +51,59 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      drawer: MyDrawer(),
-      appBar: AppBar(
-        title: Image.asset(
-          'assets/home_page_logo.png',
-          scale: 12,
-        ),
-        foregroundColor: Theme.of(context).colorScheme.primary,
-        centerTitle: true,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _openPostMessageBox,
-        backgroundColor: Theme.of(context).colorScheme.onPrimary,
-        child: Icon(
-          Icons.add,
-          color: Theme.of(context).colorScheme.secondary,
-        ),
-      ),
-      body: _buildPostList(listeningProvider.allPosts),
+    bool isDarkMode = Provider.of<ThemeProvider>(context).isDarkMode;
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          drawer: MyDrawer(),
+          appBar: AppBar(
+            title: Image.asset(
+              'assets/home_page_logo.png',
+              scale: 12,
+            ),
+            foregroundColor: Theme.of(context).colorScheme.primary,
+            centerTitle: true,
+            bottom: TabBar(
+              dividerColor: Colors.transparent,
+              labelColor: Theme.of(context).colorScheme.onPrimary,
+              unselectedLabelColor: Theme.of(context).colorScheme.primary,
+              indicatorColor: Theme.of(context).colorScheme.onPrimary,
+              tabs: [
+                Tab(text: "For you"),
+                Tab(text: "Following"),
+              ],
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(top: 5.0, right: 18.0),
+                child: GestureDetector(
+                  onTap: Provider.of<ThemeProvider>(context, listen: false)
+                      .toggleTheme,
+                  child: Icon(
+                    isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                    size: 24,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              )
+            ],
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _openPostMessageBox,
+            backgroundColor: Theme.of(context).colorScheme.onPrimary,
+            child: Icon(
+              Icons.add,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.only(top: 10.0),
+            child: TabBarView(children: [
+              _buildPostList(listeningProvider.allPosts),
+              _buildPostList(listeningProvider.followingPosts),
+            ]),
+          )),
     );
   }
 

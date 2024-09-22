@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:echo_wall/components/my_input_alert_box.dart';
+import 'package:echo_wall/helper/time_formatter.dart';
 import 'package:echo_wall/models/post.dart';
 import 'package:echo_wall/services/auth/auth_service.dart';
 import 'package:echo_wall/services/database/database_provider.dart';
@@ -292,6 +293,13 @@ class _MyPostTileState extends State<MyPostTile> {
                       ),
                     )
                   ],
+                ),
+                Spacer(),
+                Text(
+                  formatTimeStamp(widget.post.timestamp),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 )
               ],
             )

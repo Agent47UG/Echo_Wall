@@ -1,8 +1,11 @@
 import 'package:echo_wall/components/my_bio_box.dart';
+import 'package:echo_wall/components/my_follow_button.dart';
 import 'package:echo_wall/components/my_input_alert_box.dart';
 import 'package:echo_wall/components/my_post_tile.dart';
+import 'package:echo_wall/components/my_profile_stats.dart';
 import 'package:echo_wall/helper/navigate_pages.dart';
 import 'package:echo_wall/models/user.dart';
+import 'package:echo_wall/pages/follow_list_page.dart';
 import 'package:echo_wall/services/auth/auth_service.dart';
 import 'package:echo_wall/services/database/database_provider.dart';
 import 'package:echo_wall/services/database/database_service.dart';
@@ -32,6 +35,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final bioTextController = TextEditingController();
 
   bool _isLoading = true;
+  bool _isFollowing = false;
 
   @override
   void initState() {
@@ -42,6 +46,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> loadUser() async {
     user = await databaseProvider.userProfile(widget.uid);
+
+    await databaseProvider.loadUserFollowers(widget.uid);
+    await databaseProvider.loadUserFollowing(widget.uid);
+
+    _isFollowing = databaseProvider.isFollowing(widget.uid);
     setState(() {
       _isLoading = false;
     });
@@ -73,9 +82,45 @@ class _ProfilePageState extends State<ProfilePage> {
     print("Saving..");
   }
 
+  Future<void> toggleFollow() async {
+    if (_isFollowing) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Unfollow"),
+          content: Text("Are you sure you want to unfollow"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                await databaseProvider.unfollowUser(widget.uid);
+              },
+              child: Text("Yes"),
+            ),
+          ],
+        ),
+      );
+    } else {
+      await databaseProvider.followUser(widget.uid);
+    }
+
+    setState(() {
+      _isFollowing = !_isFollowing;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final allUsersPosts = listeningProvider.filterUserPosts(widget.uid);
+
+    final followerCount = listeningProvider.getFollowerCount(widget.uid);
+    final followingCount = listeningProvider.getFollowingCount(widget.uid);
+
+    _isFollowing = listeningProvider.isFollowing(widget.uid);
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -106,6 +151,30 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           )),
           const SizedBox(height: 25),
+          //Stats
+          MyProfileStats(
+            postCount: allUsersPosts.length,
+            followerCount: followerCount,
+            followingCount: followingCount,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FollowListPage(
+                  uid: widget.uid,
+                ),
+              ),
+            ),
+          ),
+
+          //Follow Button
+          if (user != null && user!.uid != currentUserId)
+            MyFollowButton(
+              onPressed: toggleFollow,
+              isFollowing: _isFollowing,
+            ),
+          if (user != null && user!.uid == currentUserId)
+            const SizedBox(height: 25),
+
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30.0),
             child: Row(
@@ -130,7 +199,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
           MyBioBox(
-            text: _isLoading ? '...' : user!.bio,
+            text: _isLoading ? 'Loading...' : user!.bio,
           ),
           Padding(
             padding: const EdgeInsets.only(left: 30.0, top: 25),

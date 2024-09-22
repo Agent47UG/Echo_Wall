@@ -1,6 +1,7 @@
 import 'package:echo_wall/components/my_bottom_nav.dart';
 import 'package:echo_wall/pages/home_page.dart';
 import 'package:echo_wall/pages/profile_page.dart';
+import 'package:echo_wall/pages/search_page.dart';
 import 'package:echo_wall/pages/settings_page.dart';
 import 'package:echo_wall/services/auth/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -21,16 +22,19 @@ class _GnavHomePageState extends State<GnavHomePage> {
 
   final List<Widget> _pages = [
     HomePage(),
-    SettingsPage(),
+    SearchPage(),
     ProfilePage(uid: AuthService().getCurrentUid()),
     SettingsPage(),
   ];
   @override
   Widget build(BuildContext context) {
+    bool isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom != 0.0;
     return Scaffold(
-      bottomNavigationBar: MyBottomNav(
-        onTabChange: (index) => navigateBottomBar(index),
-      ),
+      bottomNavigationBar: isKeyboardOpen
+          ? null
+          : MyBottomNav(
+              onTabChange: (index) => navigateBottomBar(index),
+            ),
       body: _pages[_selectedIndex],
     );
   }
