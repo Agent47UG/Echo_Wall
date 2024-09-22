@@ -117,14 +117,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
-                GestureDetector(
-                  onTap: _showEditBioBox,
-                  child: Icon(
-                    Icons.edit,
-                    size: 18,
-                    color: Theme.of(context).colorScheme.primary,
+                if (user != null && user!.uid == currentUserId)
+                  GestureDetector(
+                    onTap: _showEditBioBox,
+                    child: Icon(
+                      Icons.edit,
+                      size: 18,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
-                ),
               ],
             ),
           ),
@@ -141,8 +142,13 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
           allUsersPosts.isEmpty
-              ? const Center(
-                  child: Text("No Posts Here!"),
+              ? Center(
+                  child: Text(
+                    "No Posts Here!",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
                 )
               : ListView.builder(
                   itemCount: allUsersPosts.length,

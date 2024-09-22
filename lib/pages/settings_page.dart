@@ -1,4 +1,5 @@
 import 'package:echo_wall/components/my_settings_tile.dart';
+import 'package:echo_wall/helper/navigate_pages.dart';
 import 'package:echo_wall/themes/theme_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,33 @@ class SettingsPage extends StatelessWidget {
                   Provider.of<ThemeProvider>(context, listen: false)
                       .toggleTheme(),
             ),
-          )
+          ),
+          GestureDetector(
+            onTap: () => goToBlockedUserPage(context),
+            child: MySettingsTile(
+              title: "Blocked Users",
+              action: Padding(
+                padding: const EdgeInsets.all(3),
+                child: Icon(
+                  Icons.arrow_forward,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () => goAccountSettingsPage(context),
+            child: MySettingsTile(
+              title: "Account Settings",
+              action: Padding(
+                padding: const EdgeInsets.all(3),
+                child: Icon(
+                  Icons.arrow_forward,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

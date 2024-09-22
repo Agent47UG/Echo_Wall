@@ -5,7 +5,6 @@ import 'package:echo_wall/helper/navigate_pages.dart';
 import 'package:echo_wall/models/post.dart';
 import 'package:echo_wall/services/database/database_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,7 +15,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
   final _messageController = TextEditingController();
   late final databaseProvider =
       Provider.of<DatabaseProvider>(context, listen: false);
@@ -53,43 +51,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: GNav(
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              color: Theme.of(context).colorScheme.inversePrimary,
-              activeColor: Theme.of(context).colorScheme.onPrimary,
-              tabBackgroundColor: Theme.of(context).colorScheme.secondary,
-              padding: EdgeInsets.all(16),
-              gap: 8,
-              tabs: const [
-                GButton(
-                  icon: Icons.home,
-                  text: 'Home',
-                ),
-                GButton(
-                  icon: Icons.search,
-                  text: 'Search',
-                ),
-                GButton(
-                  icon: Icons.person,
-                  text: 'Profile',
-                ),
-                GButton(
-                  icon: Icons.settings,
-                  text: 'Settings',
-                ),
-              ],
-              selectedIndex: _selectedIndex,
-              onTabChange: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              }),
-        ),
-      ),
       backgroundColor: Theme.of(context).colorScheme.surface,
       drawer: MyDrawer(),
       appBar: AppBar(

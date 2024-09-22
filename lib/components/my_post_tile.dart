@@ -1,3 +1,6 @@
+import 'dart:ffi';
+
+import 'package:echo_wall/components/my_input_alert_box.dart';
 import 'package:echo_wall/models/post.dart';
 import 'package:echo_wall/services/auth/auth_service.dart';
 import 'package:echo_wall/services/database/database_provider.dart';
@@ -26,12 +29,50 @@ class _MyPostTileState extends State<MyPostTile> {
       Provider.of<DatabaseProvider>(context, listen: false);
   late final listeningProvider = Provider.of<DatabaseProvider>(context);
 
+  @override
+  void initState() {
+    super.initState();
+    _loadComments();
+  }
+
   void _toggleLikePost() async {
     try {
       await databaseProvider.toggleLike(widget.post.id);
     } catch (e) {
       print(e);
     }
+  }
+
+  final _commentController = TextEditingController();
+
+  void _openNewCommentBox() {
+    showDialog(
+      context: context,
+      builder: (context) => MyInputAlertBox(
+        textController: _commentController,
+        hintText: "Type you Comment",
+        onPressed: () async {
+          await _addComment();
+        },
+        onPressedText: "Comment",
+      ),
+    );
+  }
+
+  Future<void> _addComment() async {
+    if (_commentController.text.trim().isEmpty) return;
+    try {
+      await databaseProvider.addComment(
+        widget.post.id,
+        _commentController.text.trim(),
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _loadComments() async {
+    await databaseProvider.loadComments(widget.post.id);
   }
 
   Future<bool> onLikeButtonTapped(bool isLiked) async {
@@ -53,8 +94,9 @@ class _MyPostTileState extends State<MyPostTile> {
                 ListTile(
                   leading: const Icon(Icons.delete),
                   title: Text("Delete"),
-                  onTap: () {
+                  onTap: () async {
                     Navigator.pop(context);
+                    await databaseProvider.deletePost(widget.post.id);
                   },
                 )
               else ...[
@@ -63,6 +105,7 @@ class _MyPostTileState extends State<MyPostTile> {
                   title: Text("Report"),
                   onTap: () {
                     Navigator.pop(context);
+                    _reportPostConfirmationBox();
                   },
                 ),
                 ListTile(
@@ -70,6 +113,8 @@ class _MyPostTileState extends State<MyPostTile> {
                   title: Text("Block"),
                   onTap: () {
                     Navigator.pop(context);
+
+                    _blockUserConfirmationBox();
                   },
                 )
               ],
@@ -85,11 +130,73 @@ class _MyPostTileState extends State<MyPostTile> {
     );
   }
 
+  void _reportPostConfirmationBox() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Report User"),
+        content: Text("Are you sure you want to report this message?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () async {
+              await databaseProvider.reportUser(
+                  widget.post.id, widget.post.uid);
+
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Message Reported"),
+                ),
+              );
+            },
+            child: const Text("Report"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _blockUserConfirmationBox() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Block User"),
+        content: Text("Are you sure you want to block this user?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () async {
+              await databaseProvider.blockUser(widget.post.uid);
+
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("User Blocked"),
+                ),
+              );
+            },
+            child: const Text("Block"),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     bool likedByCurrentUser =
         listeningProvider.isPostLikedByCurrentUser(widget.post.id);
     int likeCount = listeningProvider.getLikeCount(widget.post.id);
+
+    int commentCount = listeningProvider.getComment(widget.post.id).length;
+
     return GestureDetector(
       onTap: widget.onPostTap,
       child: Container(
@@ -146,20 +253,46 @@ class _MyPostTileState extends State<MyPostTile> {
             ),
             Row(
               children: [
-                LikeButton(
-                  size: 24,
-                  onTap: onLikeButtonTapped,
-                  isLiked: likedByCurrentUser,
-                  bubblesSize: 60,
-                  circleSize: 20,
-                ),
-                const SizedBox(width: 5),
-                Text(
-                  likeCount != 0 ? likeCount.toString() : '',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
+                SizedBox(
+                  width: 60,
+                  child: Row(
+                    children: [
+                      LikeButton(
+                        size: 24,
+                        onTap: onLikeButtonTapped,
+                        isLiked: likedByCurrentUser,
+                        bubblesSize: 60,
+                        circleSize: 20,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        likeCount != 0 ? likeCount.toString() : '',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: _openNewCommentBox,
+                      child: Icon(
+                        Icons.comment,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 23,
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      commentCount != 0 ? commentCount.toString() : '',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    )
+                  ],
+                )
               ],
             )
           ],

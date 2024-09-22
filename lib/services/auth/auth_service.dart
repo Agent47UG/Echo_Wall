@@ -1,3 +1,4 @@
+import 'package:echo_wall/services/database/database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
@@ -34,5 +35,14 @@ class AuthService {
 
   Future<void> logout() async {
     await _auth.signOut();
+  }
+
+  Future<void> deleteAccount() async {
+    User? user = getCurrentUser();
+
+    if (user != null) {
+      await DatabaseService().deleteUserInfoFromFirebase(user.uid);
+      await user.delete();
+    }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:echo_wall/pages/gnav_home_page.dart';
 import 'package:echo_wall/pages/home_page.dart';
 import 'package:echo_wall/services/auth/login_or_register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,7 +14,7 @@ class AuthGate extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return const HomePage();
+              return GnavHomePage();
             } else {
               return const LoginOrRegister();
             }

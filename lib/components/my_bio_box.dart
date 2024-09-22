@@ -14,7 +14,7 @@ class MyBioBox extends StatelessWidget {
           borderRadius: BorderRadius.circular(8)),
       padding: EdgeInsets.all(25),
       child: Text(
-        text.isNotEmpty ? text : "Enter a Bio.!",
+        text.isNotEmpty ? text : "Enter a Bio...!",
         style: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
       ),
     );
