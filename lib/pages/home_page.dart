@@ -6,6 +6,7 @@ import 'package:echo_wall/models/post.dart';
 import 'package:echo_wall/services/database/database_provider.dart';
 import 'package:echo_wall/themes/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -49,6 +50,11 @@ class _HomePageState extends State<HomePage> {
     await databaseProvider.postMessage(message);
   }
 
+  Future<void> _handleRefresh() async {
+    loadAllPost();
+    return await Future.delayed(Duration(seconds: 1));
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isDarkMode = Provider.of<ThemeProvider>(context).isDarkMode;
@@ -70,7 +76,7 @@ class _HomePageState extends State<HomePage> {
               unselectedLabelColor: Theme.of(context).colorScheme.primary,
               indicatorColor: Theme.of(context).colorScheme.onPrimary,
               tabs: [
-                Tab(text: "For you"),
+                Tab(text: "For You"),
                 Tab(text: "Following"),
               ],
             ),
@@ -109,18 +115,40 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildPostList(List<Post> posts) {
     return posts.isEmpty
-        ? Center(
-            child: Text("Nothing Here..!"),
+        ? LiquidPullToRefresh(
+            onRefresh: _handleRefresh,
+            color: Theme.of(context).colorScheme.secondary,
+            backgroundColor: Theme.of(context).colorScheme.onPrimary,
+            showChildOpacityTransition: false,
+            springAnimationDurationInMilliseconds: 700,
+            animSpeedFactor: 3,
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 300.0),
+                  child: Center(child: Text("No Posts Here!")),
+                )
+              ],
+            ),
           )
-        : ListView.builder(
-            itemCount: posts.length,
-            itemBuilder: (context, index) {
-              final post = posts[index];
-              return MyPostTile(
-                post: post,
-                onUserTap: () => goUserPage(context, post.uid),
-                onPostTap: () => goPostPage(context, post),
-              );
-            });
+        : LiquidPullToRefresh(
+            color: Theme.of(context).colorScheme.secondary,
+            backgroundColor: Theme.of(context).colorScheme.onPrimary,
+            onRefresh: _handleRefresh,
+            showChildOpacityTransition: false,
+            springAnimationDurationInMilliseconds: 700,
+            animSpeedFactor: 3,
+            child: ListView.builder(
+                itemCount: posts.length,
+                itemBuilder: (context, index) {
+                  final post = posts[index];
+                  return MyPostTile(
+                    post: post,
+                    onUserTap: () => goUserPage(context, post.uid),
+                    onPostTap: () => goPostPage(context, post),
+                  );
+                }),
+          );
   }
 }

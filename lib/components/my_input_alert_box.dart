@@ -21,27 +21,30 @@ class MyInputAlertBox extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(8)),
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,
-      content: TextField(
-        controller: textController,
-        maxLength: 200,
-        maxLines: 4,
-        decoration: InputDecoration(
-          enabledBorder: OutlineInputBorder(
+      content: Container(
+        width: 270,
+        child: TextField(
+          controller: textController,
+          maxLength: 200,
+          maxLines: 5,
+          decoration: InputDecoration(
+            enabledBorder: OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.tertiary),
+                borderRadius: BorderRadius.circular(8)),
+            focusedBorder: OutlineInputBorder(
               borderSide:
-                  BorderSide(color: Theme.of(context).colorScheme.tertiary),
-              borderRadius: BorderRadius.circular(12)),
-          focusedBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(color: Theme.of(context).colorScheme.onPrimary),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          hintText: hintText,
-          hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
-          fillColor: Theme.of(context).colorScheme.secondary,
-          filled: true,
-          counterStyle: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary,
-            fontSize: 15,
+                  BorderSide(color: Theme.of(context).colorScheme.onPrimary),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            hintText: hintText,
+            hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+            fillColor: Theme.of(context).colorScheme.secondary,
+            filled: true,
+            counterStyle: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimary,
+              fontSize: 15,
+            ),
           ),
         ),
       ),
@@ -58,7 +61,10 @@ class MyInputAlertBox extends StatelessWidget {
               onPressed!();
               textController.clear();
             },
-            child: Text(onPressedText)),
+            child: Text(
+              onPressedText,
+              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+            )),
       ],
     );
   }

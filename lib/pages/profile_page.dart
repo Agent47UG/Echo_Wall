@@ -8,7 +8,6 @@ import 'package:echo_wall/models/user.dart';
 import 'package:echo_wall/pages/follow_list_page.dart';
 import 'package:echo_wall/services/auth/auth_service.dart';
 import 'package:echo_wall/services/database/database_provider.dart';
-import 'package:echo_wall/services/database/database_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

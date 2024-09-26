@@ -3,5 +3,5 @@ import 'package:intl/intl.dart';
 
 String formatTimeStamp(Timestamp timestamp) {
   DateTime dateTime = timestamp.toDate();
-  return DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
+  return DateFormat('HH:mm • dd MMM yy').format(dateTime);
 }

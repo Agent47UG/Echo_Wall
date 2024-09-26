@@ -1,4 +1,5 @@
 import 'package:echo_wall/components/my_comment_tile.dart';
+import 'package:echo_wall/components/my_input_alert_box.dart';
 import 'package:echo_wall/components/my_post_tile.dart';
 import 'package:echo_wall/helper/navigate_pages.dart';
 import 'package:echo_wall/models/post.dart';
@@ -22,6 +23,33 @@ class _PostPageState extends State<PostPage> {
   late final listeningProvider = Provider.of<DatabaseProvider>(context);
   late final databaseProvider =
       Provider.of<DatabaseProvider>(context, listen: false);
+  final _commentController = TextEditingController();
+
+  void _openNewCommentBox() {
+    showDialog(
+      context: context,
+      builder: (context) => MyInputAlertBox(
+        textController: _commentController,
+        hintText: "Type you Comment",
+        onPressed: () async {
+          await _addComment();
+        },
+        onPressedText: "Comment",
+      ),
+    );
+  }
+
+  Future<void> _addComment() async {
+    if (_commentController.text.trim().isEmpty) return;
+    try {
+      await databaseProvider.addComment(
+        widget.post.id,
+        _commentController.text.trim(),
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +61,21 @@ class _PostPageState extends State<PostPage> {
         title: Text("P O S T"),
         centerTitle: true,
         foregroundColor: Theme.of(context).colorScheme.primary,
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _openNewCommentBox,
+        backgroundColor: Theme.of(context).colorScheme.onPrimary,
+        label: Text(
+          "Comment",
+          style: TextStyle(
+              color: Theme.of(context).colorScheme.secondary,
+              fontWeight: FontWeight.bold,
+              fontSize: 15),
+        ),
+        icon: Icon(
+          Icons.add,
+          color: Theme.of(context).colorScheme.secondary,
+        ),
       ),
       body: ListView(
         children: [

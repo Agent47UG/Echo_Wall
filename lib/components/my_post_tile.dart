@@ -1,11 +1,10 @@
-import 'dart:ffi';
-
 import 'package:echo_wall/components/my_input_alert_box.dart';
 import 'package:echo_wall/helper/time_formatter.dart';
 import 'package:echo_wall/models/post.dart';
 import 'package:echo_wall/services/auth/auth_service.dart';
 import 'package:echo_wall/services/database/database_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:like_button/like_button.dart';
 import 'package:provider/provider.dart';
 
@@ -29,6 +28,8 @@ class _MyPostTileState extends State<MyPostTile> {
   late final databaseProvider =
       Provider.of<DatabaseProvider>(context, listen: false);
   late final listeningProvider = Provider.of<DatabaseProvider>(context);
+
+  final GlobalKey<LikeButtonState> _globalKey = GlobalKey<LikeButtonState>();
 
   @override
   void initState() {
@@ -190,6 +191,8 @@ class _MyPostTileState extends State<MyPostTile> {
     );
   }
 
+  int numberodlike = 33;
+
   @override
   Widget build(BuildContext context) {
     bool likedByCurrentUser =
@@ -259,11 +262,21 @@ class _MyPostTileState extends State<MyPostTile> {
                   child: Row(
                     children: [
                       LikeButton(
+                        key: _globalKey,
                         size: 24,
                         onTap: onLikeButtonTapped,
+                        countPostion: CountPostion.bottom,
                         isLiked: likedByCurrentUser,
                         bubblesSize: 60,
                         circleSize: 20,
+                        likeBuilder: (isLiked) {
+                          return Icon(
+                            isLiked ? Icons.favorite : Icons.favorite_border,
+                            color: isLiked
+                                ? const Color.fromARGB(255, 255, 64, 129)
+                                : Theme.of(context).colorScheme.primary,
+                          );
+                        },
                       ),
                       const SizedBox(width: 5),
                       Text(
@@ -280,9 +293,9 @@ class _MyPostTileState extends State<MyPostTile> {
                     GestureDetector(
                       onTap: _openNewCommentBox,
                       child: Icon(
-                        Icons.comment,
+                        Ionicons.chatbox,
                         color: Theme.of(context).colorScheme.primary,
-                        size: 23,
+                        size: 22,
                       ),
                     ),
                     const SizedBox(width: 5),

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:echo_wall/components/my_user_tile.dart';
 import 'package:echo_wall/models/user.dart';
 import 'package:echo_wall/services/database/database_provider.dart';

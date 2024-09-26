@@ -49,7 +49,7 @@ class DatabaseService {
   Future<void> deleteUserInfoFromFirebase(String uid) async {
     WriteBatch batch = _db.batch();
     DocumentReference userDoc = _db.collection("Users").doc(uid);
-
+    batch.delete(userDoc);
     QuerySnapshot userPosts =
         await _db.collection("Posts").where("uid", isEqualTo: uid).get();
 

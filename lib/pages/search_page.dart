@@ -21,20 +21,34 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: TextField(
-          controller: _searchController,
-          decoration: InputDecoration(
-            hintText: "Search User..",
-            hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
-            border: InputBorder.none,
+        toolbarHeight: 90,
+        title: Padding(
+          padding: const EdgeInsets.only(left: 9, right: 9, top: 15),
+          child: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: "Search User..",
+              hintStyle:
+                  TextStyle(color: Theme.of(context).colorScheme.primary),
+              enabledBorder: OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.tertiary),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.onPrimary),
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onChanged: (value) {
+              if (value.isNotEmpty) {
+                databaseProvider.searchUsers(value);
+              } else {
+                databaseProvider.searchUsers("");
+              }
+            },
           ),
-          onChanged: (value) {
-            if (value.isNotEmpty) {
-              databaseProvider.searchUsers(value);
-            } else {
-              databaseProvider.searchUsers("");
-            }
-          },
         ),
       ),
       body: listeningProvider.searchResult.isEmpty

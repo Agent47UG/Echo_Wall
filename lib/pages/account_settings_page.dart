@@ -30,7 +30,10 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                 (route) => false,
               );
             },
-            child: const Text("Delete"),
+            child: const Text(
+              "Delete",
+              style: TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -42,30 +45,60 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: Text("Account Settings"),
+        title: Text("A C C O U N T"),
         centerTitle: true,
         foregroundColor: Theme.of(context).colorScheme.primary,
       ),
-      body: GestureDetector(
-        onTap: () => confirmDeletion(context),
-        child: Column(
-          children: [
-            Container(
-              margin: EdgeInsets.all(25),
-              padding: EdgeInsets.all(25),
-              decoration: BoxDecoration(
-                color: Colors.red,
-                borderRadius: BorderRadius.circular(8),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(
+              top: 30,
+            ),
+            child: Align(
+              alignment: Alignment.center,
+              child: Text(
+                "Permanently Delete Your Account!",
+                style: TextStyle(
+                    fontSize: 20, color: Theme.of(context).colorScheme.primary),
               ),
-              child: Center(
-                  child: Text(
-                "Delete Account",
-                style:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-              )),
-            )
-          ],
-        ),
+            ),
+          ),
+          Padding(
+            padding:
+                const EdgeInsets.only(top: 30, left: 15, right: 15, bottom: 10),
+            child: Align(
+              alignment: Alignment.center,
+              child: Text(
+                "This will Permanently Delete Your Echo Account. Deleting your account will completely remove all of you information from our database. This cannot be undone.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 15, color: Theme.of(context).colorScheme.primary),
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () => confirmDeletion(context),
+            child: Column(
+              children: [
+                Container(
+                  margin: EdgeInsets.all(25),
+                  padding: EdgeInsets.all(25),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                      child: Text(
+                    "Delete Account",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.white),
+                  )),
+                )
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
